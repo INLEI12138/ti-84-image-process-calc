@@ -37,7 +37,8 @@ A TI-84 Plus CE program for image geometry and multi-view computations: 2D trans
 IMG GEOMETRY
 1: 2D TRANSFORM      → TRANSLATION / EUCLIDEAN R+T / SIMILARITY R+S+T /
                        SCALE SX,SY + T / GENERAL R,S,T / BACK
-2: DOF AND NOTES     → 自由度表、两视图单应成立条件、变换顺序、SIFT 步骤
+2: DOF AND NOTES     → 自由度表、两视图单应成立条件、变换顺序、SIFT 步骤、
+                       RANSAC 最终估计、ZNCC 不变性
 3: PTS TO A,B,H      → AFFINE 6 UNK / HOMOGRAPHY 9 UNK /
                        SIMILARITY 4 UNK / TRANSLATE 2 UNK / BACK
 4: CAMERA P AND H    → 相机 1 或 2：P、物体坐标下的 P̃、平面单应 H，投影点
@@ -69,7 +70,7 @@ IMG GEOMETRY
 
 ### 2. DOF AND NOTES — 速查
 
-四页文字：各变换的自由度与最少点数；两视图之间存在单应的三种情况（平面场景 / 纯旋转 / 场景在无穷远）；矩阵乘法顺序；SIFT 主要步骤。
+八页文字：各变换的自由度与最少点数；两视图之间存在单应的三种情况（平面场景 / 纯旋转 / 场景在无穷远）；矩阵乘法顺序；SIFT 主要步骤；RANSAC 如何得到最终估计、为什么不能直接对全部点做普通最小二乘；ZNCC 为什么对亮度增益和偏移不变、SAD/SSD 与 ZNCC 为什么会选出不同的视差。
 
 ### 3. PTS TO A,B,H — 对应点 → 方程 A·p = b
 
@@ -201,7 +202,7 @@ IMG GEOMETRY
 1: 2D TRANSFORM      → TRANSLATION / EUCLIDEAN R+T / SIMILARITY R+S+T /
                        SCALE SX,SY + T / GENERAL R,S,T / BACK
 2: DOF AND NOTES     → DOF table, when two views are related by a homography,
-                       transform order, SIFT steps
+                       transform order, SIFT steps, RANSAC final fit, ZNCC invariance
 3: PTS TO A,B,H      → AFFINE 6 UNK / HOMOGRAPHY 9 UNK /
                        SIMILARITY 4 UNK / TRANSLATE 2 UNK / BACK
 4: CAMERA P AND H    → camera 1 or 2: P, object-frame P̃, plane homography H, projections
@@ -233,7 +234,7 @@ Example: EUCLIDEAN, angle 30, TX=2, TY=3, point (1,2) → `X2=1.86603, Y2=5.2320
 
 ### 2. DOF AND NOTES
 
-Four text pages: DOF and minimum correspondences per transform; the three cases where two views are related by a homography (planar scene / pure rotation / scene at infinity); multiplication order; main SIFT steps.
+Eight text pages: DOF and minimum correspondences per transform; the three cases where two views are related by a homography (planar scene / pure rotation / scene at infinity); multiplication order; main SIFT steps; how RANSAC gets the final estimate and why plain least squares on all points is unreliable; why ZNCC is invariant to gain and offset and why SAD/SSD and ZNCC can pick different disparities.
 
 ### 3. PTS TO A,B,H — correspondences → A·p = b
 
