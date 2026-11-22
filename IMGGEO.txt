@@ -1,0 +1,569 @@
+Degree
+Lbl M
+ClrHome
+Menu("IMG GEOMETRY","2D TRANSFORM",A1,"DOF AND NOTES",B1,"PTS TO A,B,H",C1,"CAMERA P AND H",D1,"EPIPOLAR E,F",E1,"APPLY H TO PT",F1,"MORE TOOLS",H1)
+Lbl A1
+ClrHome
+0->θ
+1->S
+1->T
+0->U
+0->V
+Menu("2D TYPE","TRANSLATION",A2,"EUCLIDEAN R+T",A3,"SIMILARITY R+S+T",A4,"SCALE SX,SY + T",A5,"GENERAL R,S,T",A6,"BACK",M)
+Lbl A2
+1->W
+Goto A7
+Lbl A3
+2->W
+Input "ANGLE CCW DEG=",θ
+Goto A7
+Lbl A4
+3->W
+Input "ANGLE CCW DEG=",θ
+Input "SCALE S=",S
+S->T
+Goto A7
+Lbl A5
+4->W
+Input "SX=",S
+Input "SY=",T
+Goto A7
+Lbl A6
+5->W
+Input "ANGLE CCW DEG=",θ
+Input "SX=",S
+Input "SY=",T
+Lbl A7
+Input "TX=",U
+Input "TY=",V
+Input "POINT X=",X
+Input "POINT Y=",Y
+identity(3)->[G]
+cos(θ)->[G](1,1)
+~sin(θ)->[G](1,2)
+sin(θ)->[G](2,1)
+cos(θ)->[G](2,2)
+identity(3)->[H]
+S->[H](1,1)
+T->[H](2,2)
+identity(3)->[I]
+U->[I](1,3)
+V->[I](2,3)
+[I]*[H]*[G]->[J]
+ClrHome
+If W=1
+Disp "TRANSLATION  DOF=2","MIN 1 POINT PAIR"
+If W=2
+Disp "EUCLIDEAN  DOF=3","MIN 2 POINT PAIRS"
+If W=3
+Disp "SIMILARITY  DOF=4","MIN 2 POINT PAIRS"
+If W=4
+Disp "SCALE+TRANSL  DOF=4","MIN 2 POINT PAIRS"
+If W=5
+Disp "AFFINE SUBSET  DOF=5","(GENERAL AFFINE DOF=6)"
+Pause
+ClrHome
+Disp "COS=",cos(θ),"SIN=",sin(θ)
+Disp "HR="
+Pause round([G],4)
+Disp "HS="
+Pause round([H],4)
+Disp "HT="
+Pause round([I],4)
+ClrHome
+Disp "H=HT*HS*HR="
+Pause round([J],4)
+If W<3
+Goto A8
+ClrHome
+Disp "IF HS,HT SWAPPED","HS*HT*HR="
+[H]*[I]*[G]->[G]
+Pause round([G],4)
+0->K
+For(R,1,3)
+For(C,1,3)
+If abs([G](R,C)-[J](R,C))>.000001
+1->K
+End
+End
+ClrHome
+If K=1
+Disp "DIFFERENT FROM H","SO CANNOT SWAP S,T"
+If K=0
+Disp "SAME AS H","SO CAN SWAP S,T"
+Pause
+Lbl A8
+[J]*[[X][Y][1]]->[I]
+ClrHome
+Disp "H*"
+Disp [[X][Y][1]]
+Disp "="
+Disp round([I],5)
+Pause
+ClrHome
+Disp "POINT MAPS TO","X2=",round([I](1,1)/[I](3,1),5),"Y2=",round([I](2,1)/[I](3,1),5)
+Pause
+Goto M
+Lbl B1
+ClrHome
+Disp "TYPE    DOF  MIN PTS","TRANSL   2    1","EUCLID   3    2","SIMILAR  4    2","SCALE+T  4    2","AFFINE   6    3","HOMOG    8    4","CAMERA P 11   6","F 7 DOF  E 5 DOF"
+Pause
+ClrHome
+Disp "HOMOGRAPHY 2 VIEWS IF","1 SCENE IS PLANAR","2 PURE ROTATION","  (SAME CAM CENTER)","3 SCENE VERY FAR","  (AT INFINITY)"
+Pause
+ClrHome
+Disp "ORDER MATTERS","HT*HS != HS*HT","HS*HT GIVES TRANSL","(SX*TX,SY*TY)","H=HT*HS*HR MEANS","R FIRST THEN S THEN T"
+Pause
+ClrHome
+Disp "SIFT","1 SCALE SPACE GAUSSIAN","  DOG = DIFF OF GAUSS","2 EXTREMA 3X3X3 NBRS","3 SUBPIXEL REFINE, DROP","  LOW CONTRAST + EDGES","4 ORIENT HIST 36 BINS","5 DESCRIPTOR 4X4X8=128"
+Pause
+Goto M
+Lbl C1
+ClrHome
+Menu("MODEL","AFFINE 6 UNK",C2,"HOMOGRAPHY 9 UNK",C3,"SIMILARITY 4 UNK",C5,"TRANSLATE 2 UNK",C6,"BACK",M)
+Lbl C2
+6->W
+1->K
+Goto C4
+Lbl C3
+8->W
+2->K
+Goto C4
+Lbl C5
+4->W
+3->K
+ClrHome
+Disp "H=[[A,-B,TX]","[B,A,TY][0,0,1]]","P={A,B,TX,TY}"
+Pause
+Goto C4
+Lbl C6
+2->W
+4->K
+ClrHome
+Disp "H=[[1,0,TX]","[0,1,TY][0,0,1]]","P={TX,TY}"
+Pause
+Lbl C4
+ClrHome
+Input "NUM PTS=",N
+{2N,W}->dim([J])
+Fill(0,[J])
+{2N,1}->dim([I])
+Fill(0,[I])
+For(I,1,N)
+ClrHome
+Disp "POINT",I
+Input "X=",X
+Input "Y=",Y
+Input "X2=",U
+Input "Y2=",V
+2I-1->R
+U->[I](R,1)
+V->[I](R+1,1)
+If K<=2
+Then
+X->[J](R,1)
+Y->[J](R,2)
+1->[J](R,3)
+X->[J](R+1,4)
+Y->[J](R+1,5)
+1->[J](R+1,6)
+End
+ClrHome
+If K=1
+Then
+Disp "ROW",R
+Pause {X,Y,1,0,0,0}
+Disp "ROW",R+1
+Pause {0,0,0,X,Y,1}
+Disp "B ENTRIES"
+Pause {U,V}
+End
+If K=2
+Then
+~U*X->[J](R,7)
+~U*Y->[J](R,8)
+~V*X->[J](R+1,7)
+~V*Y->[J](R+1,8)
+Disp "ROW",R
+Pause {X,Y,1,0,0,0,~U*X,~U*Y,~U}
+Disp "ROW",R+1
+Pause {0,0,0,X,Y,1,~V*X,~V*Y,~V}
+Disp "B=0 (SUM H2=1 FORM)"
+Pause
+End
+If K=3
+Then
+X->[J](R,1)
+~Y->[J](R,2)
+1->[J](R,3)
+Y->[J](R+1,1)
+X->[J](R+1,2)
+1->[J](R+1,4)
+Disp "ROW",R
+Pause {X,~Y,1,0}
+Disp "ROW",R+1
+Pause {Y,X,0,1}
+Disp "B ENTRIES"
+Pause {U,V}
+End
+If K=4
+Then
+1->[J](R,1)
+1->[J](R+1,2)
+U-X->[I](R,1)
+V-Y->[I](R+1,1)
+Disp "ROW",R
+Pause {1,0}
+Disp "ROW",R+1
+Pause {0,1}
+Disp "B ENTRIES (X2-X,Y2-Y)"
+Pause {U-X,V-Y}
+End
+End
+If 2N<W
+Goto M
+([J]^T*[J])^-1*[J]^T*[I]->[G]
+identity(3)->[H]
+If K<=2
+Then
+[G](1,1)->[H](1,1)
+[G](2,1)->[H](1,2)
+[G](3,1)->[H](1,3)
+[G](4,1)->[H](2,1)
+[G](5,1)->[H](2,2)
+[G](6,1)->[H](2,3)
+End
+If K=2
+Then
+[G](7,1)->[H](3,1)
+[G](8,1)->[H](3,2)
+End
+If K=3
+Then
+[G](1,1)->[H](1,1)
+~[G](2,1)->[H](1,2)
+[G](3,1)->[H](1,3)
+[G](2,1)->[H](2,1)
+[G](1,1)->[H](2,2)
+[G](4,1)->[H](2,3)
+End
+If K=4
+Then
+[G](1,1)->[H](1,3)
+[G](2,1)->[H](2,3)
+End
+ClrHome
+Disp "SOLVED P="
+Pause round([G]^T,5)
+Disp "SOLVED H="
+Pause round([H],5)
+If K!=2
+Goto M
+0->S
+For(R,1,3)
+For(C,1,3)
+S+[H](R,C)^2->S
+End
+End
+Disp "H WITH SUM H2=1"
+Pause round((1/sqrt(S))*[H],5)
+Goto M
+Lbl D1
+ClrHome
+Input "CAMERA NO 1 OR 2=",N
+ClrHome
+Disp "ENTER K ROW BY ROW","TYPE LIKE 4,0,0"
+identity(3)->[G]
+For(R,1,3)
+Disp "K ROW",R
+Input "ROW=",Str1
+expr("{"+Str1+"}")->L1
+L1(1)->[G](R,1)
+L1(2)->[G](R,2)
+L1(3)->[G](R,3)
+End
+identity(3)->[H]
+Menu("R WORLD TO CAM","NONE R=I",D7,"ABOUT X AXIS",D3,"ABOUT Y AXIS",D4,"ABOUT Z AXIS",D5,"TYPE R ROWS",D6)
+Lbl D3
+Input "ANGLE DEG=",θ
+cos(θ)->[H](2,2)
+~sin(θ)->[H](2,3)
+sin(θ)->[H](3,2)
+cos(θ)->[H](3,3)
+Goto D7
+Lbl D4
+Input "ANGLE DEG=",θ
+cos(θ)->[H](1,1)
+sin(θ)->[H](1,3)
+~sin(θ)->[H](3,1)
+cos(θ)->[H](3,3)
+Goto D7
+Lbl D5
+Input "ANGLE DEG=",θ
+cos(θ)->[H](1,1)
+~sin(θ)->[H](1,2)
+sin(θ)->[H](2,1)
+cos(θ)->[H](2,2)
+Goto D7
+Lbl D6
+ClrHome
+Disp "ENTER R ROW BY ROW","TYPE LIKE 1,0,0"
+For(R,1,3)
+Input "ROW=",Str1
+expr("{"+Str1+"}")->L1
+L1(1)->[H](R,1)
+L1(2)->[H](R,2)
+L1(3)->[H](R,3)
+End
+Lbl D7
+ClrHome
+Disp "CAMERA CENTER IN WORLD"
+Input "POS X=",X
+Input "POS Y=",Y
+Input "POS Z=",Z
+[H]*[[X][Y][Z]]->[I]
+[I]*~1->[I]
+augment([H],[I])->[J]
+If N=1
+Then
+[G]->[A]
+[J]->[E]
+End
+If N=2
+Then
+[G]->[B]
+[J]->[F]
+End
+[G]*[J]->[I]
+If N=1
+[I]->[C]
+If N=2
+[I]->[D]
+ClrHome
+Disp "K="
+Pause round([G],4)
+Disp "R,T  (T=-R*C IN COL 4)"
+Pause round([J],4)
+ClrHome
+Disp "P=K*AUG(R,T) WORLD="
+Pause round([I],4)
+ClrHome
+Disp "OBJECT ORIGIN IN","WORLD (0 IF NONE)"
+Input "OX=",U
+Input "OY=",V
+Input "OZ=",W
+identity(4)->[J]
+U->[J](1,4)
+V->[J](2,4)
+W->[J](3,4)
+[I]*[J]->[H]
+ClrHome
+Disp "P OBJ (OBJECT COORDS)="
+Pause round([H],4)
+For(R,1,3)
+[H](R,1)->[G](R,1)
+[H](R,2)->[G](R,2)
+[H](R,4)->[G](R,3)
+End
+ClrHome
+Disp "H=COLS 1,2,4 OF P OBJ"
+Pause round([G],4)
+If [G](3,3)!=0
+Then
+(1/[G](3,3))*[G]->[G]
+Disp "H NORMALIZED H9=1"
+Pause round([G],5)
+End
+Lbl D8
+ClrHome
+Menu("PROJECT POINT","WORLD PT VIA P",D9,"OBJ PT VIA H",DA,"MAIN MENU",M)
+Lbl D9
+ClrHome
+Input "WORLD X=",X
+Input "WORLD Y=",Y
+Input "WORLD Z=",Z
+[I]*[[X][Y][Z][1]]->[J]
+Disp "IMAGE X=",round([J](1,1)/[J](3,1),5),"IMAGE Y=",round([J](2,1)/[J](3,1),5),"DEPTH W=",round([J](3,1),5)
+Pause
+Goto D8
+Lbl DA
+ClrHome
+Input "OBJ P=",X
+Input "OBJ Q=",Y
+[G]*[[X][Y][1]]->[J]
+Disp "IMAGE X=",round([J](1,1)/[J](3,1),5),"IMAGE Y=",round([J](2,1)/[J](3,1),5)
+Pause
+Goto D8
+Lbl E1
+ClrHome
+Disp "NEEDS CAM 1 AND 2","SET IN CAMERA MENU"
+{3,3}->dim([G])
+{3,3}->dim([H])
+{3,1}->dim([I])
+{3,1}->dim([J])
+For(R,1,3)
+For(C,1,3)
+[E](R,C)->[G](R,C)
+[F](R,C)->[H](R,C)
+End
+[E](R,4)->[I](R,1)
+[F](R,4)->[J](R,1)
+End
+[H]*[G]^T->[H]
+[J]-[H]*[I]->[J]
+Fill(0,[G])
+~[J](3,1)->[G](1,2)
+[J](2,1)->[G](1,3)
+[J](3,1)->[G](2,1)
+~[J](1,1)->[G](2,3)
+~[J](2,1)->[G](3,1)
+[J](1,1)->[G](3,2)
+Disp "R=R2*R1T="
+Pause round([H],4)
+ClrHome
+Disp "T=T2-R*T1 (ROW)="
+Pause round([J]^T,4)
+Disp "[T]X="
+Pause round([G],4)
+[G]*[H]->[G]
+ClrHome
+Disp "E=[T]X*R="
+Pause round([G],5)
+([B]^-1)^T*[G]*[A]^-1->[I]
+Disp "F=INV(K2)T*E*INV(K1)="
+Pause round([I],5)
+Lbl E2
+ClrHome
+Disp "EPIPOLAR LINE IN CAM2"
+Input "CAM1 X=",X
+Input "CAM1 Y=",Y
+[I]*[[X][Y][1]]->[J]
+[J](1,1)->A
+[J](2,1)->B
+[J](3,1)->C
+Disp "A*X2+B*Y2+C=0","A=",round(A,5),"B=",round(B,5),"C=",round(C,5)
+Pause
+ClrHome
+If B!=0
+Disp "Y2=M*X2+K","M=",round(~A/B,5),"K=",round(~C/B,5)
+If B=0 and A!=0
+Disp "X2=",round(~C/A,5)
+Input "CHECK X2=",U
+Input "CHECK Y2=",V
+Disp "A*X2+B*Y2+C=",round(A*U+B*V+C,6)
+Pause
+ClrHome
+Menu("NEXT","ANOTHER POINT",E2,"MAIN MENU",M)
+Lbl F1
+ClrHome
+Disp "ENTER H ROW BY ROW","TYPE LIKE 1,0,2"
+identity(3)->[G]
+For(R,1,3)
+Input "ROW=",Str1
+expr("{"+Str1+"}")->L1
+L1(1)->[G](R,1)
+L1(2)->[G](R,2)
+L1(3)->[G](R,3)
+End
+Lbl F2
+ClrHome
+Input "X=",X
+Input "Y=",Y
+[G]*[[X][Y][1]]->[J]
+Disp "X2=",round([J](1,1)/[J](3,1),5),"Y2=",round([J](2,1)/[J](3,1),5),"W=",round([J](3,1),5)
+Pause
+Menu("NEXT","ANOTHER POINT",F2,"MAIN MENU",M)
+Lbl G1
+ClrHome
+Disp "P=LAMBDA*K(R,-RC)","ENTER P ROW BY ROW","TYPE LIKE 1,0,0,0"
+{3,4}->dim([J])
+For(R,1,3)
+Disp "P ROW",R
+Input "ROW=",Str1
+expr("{"+Str1+"}")->L1
+For(C,1,4)
+L1(C)->[J](R,C)
+End
+End
+{3,3}->dim([G])
+{3,1}->dim([I])
+For(R,1,3)
+For(C,1,3)
+[J](R,C)->[G](R,C)
+End
+[J](R,4)->[I](R,1)
+End
+([G]^-1*[I])*~1->[H]
+ClrHome
+Disp "CENTER C=-INV(M)*P4="
+Pause round([H]^T,5)
+[G]*[G]^T->[H]
+sqrt([H](3,3))->L
+If det([G])<0
+~L->L
+[H](1,3)/[H](3,3)->P
+[H](2,3)/[H](3,3)->Q
+sqrt([H](2,2)/[H](3,3)-Q^2)->G
+([H](1,2)/[H](3,3)-P*Q)/G->S
+sqrt([H](1,1)/[H](3,3)-S^2-P^2)->F
+identity(3)->[H]
+F->[H](1,1)
+S->[H](1,2)
+P->[H](1,3)
+G->[H](2,2)
+Q->[H](2,3)
+ClrHome
+Disp "K (K33=1)="
+Pause round([H],4)
+Disp "FX,FY,SKEW,CX,CY"
+Pause round({F,G,S,P,Q},4)
+ClrHome
+Disp "R=INV(K)*M/LAMBDA="
+Pause round((1/L)*[H]^-1*[G],4)
+Disp "LAMBDA=",L
+Pause
+Goto M
+Lbl H1
+ClrHome
+Menu("MORE TOOLS","P TO K,R,C",G1,"RANSAC ITERATIONS",H2,"SAD SSD ZNCC",H3,"BACK",M,"QUIT",Q)
+Lbl H2
+ClrHome
+Disp "MIN SAMPLE S","TRANSL 1  SIMIL 2","AFFINE 3  HOMOG 4","F 7 OR 8 (8-POINT)"
+Input "OUTLIER FRAC=",E
+Input "SAMPLE SIZE S=",S
+Input "CONFIDENCE P=",P
+1-E->W
+W^S->U
+log(1-P)/log(1-U)->N
+ClrHome
+Disp "INLIER W=",W,"W^S=",round(U,6),"N>=LOG(1-P)/LOG(1-W^S)",round(N,4),"MIN N=",~int(~N)
+Pause
+Goto M
+Lbl H3
+ClrHome
+Disp "WINDOWS LIKE 10,20,30,20"
+Input "LEFT L=",Str1
+expr("{"+Str1+"}")->L1
+Lbl H4
+Input "RIGHT R=",Str1
+expr("{"+Str1+"}")->L2
+dim(L1)!=dim(L2)->K
+If K
+Disp "LENGTH MISMATCH","LEFT HAS",dim(L1),"RIGHT HAS",dim(L2),"RE-ENTER BOTH"
+If K
+Pause
+If K
+Goto H3
+sum(abs(L1-L2))->A
+sum((L1-L2)^2)->B
+L1-mean(L1)->L3
+L2-mean(L2)->L4
+sum(L3*L4)/sqrt(sum(L3^2)*sum(L4^2))->C
+ClrHome
+Disp "SAD (MIN BEST)=",A,"SSD (MIN BEST)=",B,"ZNCC (MAX BEST)=",round(C,5)
+Pause
+ClrHome
+Menu("NEXT","ANOTHER RIGHT",H4,"MAIN MENU",M)
+Lbl Q
+ClrHome
+Stop
